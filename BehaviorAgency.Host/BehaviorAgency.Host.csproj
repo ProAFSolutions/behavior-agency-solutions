@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TypeScriptToolsVersion>2.8</TypeScriptToolsVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="wwwroot\e2e\**" />
+    <Compile Remove="wwwroot\src\**" />
+    <Content Remove="wwwroot\e2e\**" />
+    <Content Remove="wwwroot\src\**" />
+    <EmbeddedResource Remove="wwwroot\e2e\**" />
+    <EmbeddedResource Remove="wwwroot\src\**" />
+    <None Remove="wwwroot\e2e\**" />
+    <None Remove="wwwroot\src\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\.editorconfig" />
+    <Content Remove="wwwroot\.gitignore" />
+    <Content Remove="wwwroot\.stylelintrc.json" />
+    <Content Remove="wwwroot\.travis.yml" />
+    <Content Remove="wwwroot\angular.json" />
+    <Content Remove="wwwroot\favicon.ico" />
+    <Content Remove="wwwroot\karma.conf.js" />
+    <Content Remove="wwwroot\LICENSE" />
+    <Content Remove="wwwroot\package-lock.json" />
+    <Content Remove="wwwroot\package.json" />
+    <Content Remove="wwwroot\protractor.conf.js" />
+    <Content Remove="wwwroot\tsconfig.json" />
+    <Content Remove="wwwroot\tslint.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.8.4" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Core\" />
+    <Folder Include="wwwroot\dist\assets\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BehaviorAgency.Entities\BehaviorAgency.Entities.csproj" />
+    <ProjectReference Include="..\BehaviorAgency.Services\BehaviorAgency.Services.csproj" />
+  </ItemGroup>
+
+</Project>
