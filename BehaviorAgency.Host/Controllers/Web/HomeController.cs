@@ -21,7 +21,6 @@ namespace BehaviorAgency.Host.Controllers.Web
         public IActionResult Index()
         {
             Prepare();
-
             return View();
         }
 
