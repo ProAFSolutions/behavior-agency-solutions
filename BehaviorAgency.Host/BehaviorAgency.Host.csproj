@@ -6,12 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Core\**" />
     <Compile Remove="wwwroot\e2e\**" />
     <Compile Remove="wwwroot\src\**" />
+    <Content Remove="Core\**" />
     <Content Remove="wwwroot\e2e\**" />
     <Content Remove="wwwroot\src\**" />
+    <EmbeddedResource Remove="Core\**" />
     <EmbeddedResource Remove="wwwroot\e2e\**" />
     <EmbeddedResource Remove="wwwroot\src\**" />
+    <None Remove="Core\**" />
     <None Remove="wwwroot\e2e\**" />
     <None Remove="wwwroot\src\**" />
   </ItemGroup>
@@ -43,7 +47,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Core\" />
     <Folder Include="wwwroot\dist\assets\" />
   </ItemGroup>
 
