@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 
 namespace BehaviorAgency.IdentityServer
 {
@@ -50,7 +52,27 @@ namespace BehaviorAgency.IdentityServer
                     options.ClientId = "434483408261-55tc8n0cs4ff1fe21ea8df2o443v2iuc.apps.googleusercontent.com";
                     options.ClientSecret = "3gcoTrEDPPJ0ukn_aYYT6PWo";
                 })
-                
+
+                .AddOAuth("Dropbox", options => 
+                {
+                    options.SignInScheme= IdentityServerConstants.ExternalCookieAuthenticationScheme;
+
+                    options.AuthorizationEndpoint = "https://www.dropbox.com/oauth2/authorize";
+                    options.TokenEndpoint = "https://api.dropboxapi.com/oauth2/token";
+                    options.UserInformationEndpoint = "https://api.dropboxapi.com/2/users/get_current_account";
+
+                    options.CallbackPath = "/signin-dropbox";
+
+                    options.ClaimsIssuer = "Dropbox";
+                    options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "account_id");
+                    options.ClaimActions.MapJsonSubKey(ClaimTypes.Name, "name", "display_name");
+                    options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+
+                    //https://www.dropbox.com/developers/apps/info/zxwm633gdr61ti8
+                    options.ClientId = "zxwm633gdr61ti8";
+                    options.ClientSecret = "2pss8ap74u6f89u";
+                })
+
                 .AddOpenIdConnect("oidc", "OpenID Connect", options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
