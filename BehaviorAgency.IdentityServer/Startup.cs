@@ -7,32 +7,66 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using BehaviorAgency.IdentityServer.Data;
+using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Mappers;
+using System.Linq;
+using Microsoft.Extensions.Configuration;
 
 namespace BehaviorAgency.IdentityServer
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                //First time only
+                //InitDatabase(app);
+
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseIdentityServer();
+            app.UseStaticFiles();
+            app.UseMvcWithDefaultRoute();
+        }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
 
-            const string connectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;database=IdentityServer4.Quickstart.EntityFramework-2.0.0;trusted_connection=yes;";
+            SetupIdentityServer(services);
+        }
+
+        private void SetupIdentityServer(IServiceCollection services)
+        {
+            const string connectionString = @"Data Source=localhost\SQLEXPRESS;database=BehaviorAgency_IdentityServer_DB;trusted_connection=yes;";
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
             // configure identity server with in-memory stores, keys, clients and scopes
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
-                .AddTestUsers(Config.GetUsers())
                 
+                .AddTestUsers(Config.GetUsers())
+
                 // this adds the config data from DB (clients, resources)
                 .AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = builder =>
                         builder.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
                 })
-                
+
                 // this adds the operational data from DB (codes, tokens, consents)
                 .AddOperationalStore(options =>
                 {
@@ -44,6 +78,12 @@ namespace BehaviorAgency.IdentityServer
                     options.TokenCleanupInterval = 30;
                 });
 
+            SetupOAuthProviders(services);
+        }
+
+        private void SetupOAuthProviders(IServiceCollection services)
+        {
+
             services.AddAuthentication()
                 .AddGoogle("Google", options =>
                 {
@@ -53,9 +93,9 @@ namespace BehaviorAgency.IdentityServer
                     options.ClientSecret = "3gcoTrEDPPJ0ukn_aYYT6PWo";
                 })
 
-                .AddOAuth("Dropbox", options => 
+                .AddOAuth("Dropbox", "Dropbox", options =>
                 {
-                    options.SignInScheme= IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
 
                     options.AuthorizationEndpoint = "https://www.dropbox.com/oauth2/authorize";
                     options.TokenEndpoint = "https://api.dropboxapi.com/oauth2/token";
@@ -71,35 +111,45 @@ namespace BehaviorAgency.IdentityServer
                     //https://www.dropbox.com/developers/apps/info/zxwm633gdr61ti8
                     options.ClientId = "zxwm633gdr61ti8";
                     options.ClientSecret = "2pss8ap74u6f89u";
-                })
-
-                .AddOpenIdConnect("oidc", "OpenID Connect", options =>
-                {
-                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
-
-                    options.Authority = "https://demo.identityserver.io/";
-                    options.ClientId = "implicit";
-
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        NameClaimType = "name",
-                        RoleClaimType = "role"
-                    };
                 });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+        private void InitDatabase(IApplicationBuilder app) {
 
-            app.UseIdentityServer();
-            app.UseStaticFiles();
-            app.UseMvcWithDefaultRoute();
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+
+                var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+                context.Database.Migrate();
+                if (!context.Clients.Any())
+                {
+                    foreach (var client in Config.GetClients())
+                    {
+                        context.Clients.Add(client.ToEntity());
+                    }
+                    context.SaveChanges();
+                }
+
+                if (!context.IdentityResources.Any())
+                {
+                    foreach (var resource in Config.GetIdentityResources())
+                    {
+                        context.IdentityResources.Add(resource.ToEntity());
+                    }
+                    context.SaveChanges();
+                }
+
+                if (!context.ApiResources.Any())
+                {
+                    foreach (var resource in Config.GetApiResources())
+                    {
+                        context.ApiResources.Add(resource.ToEntity());
+                    }
+                    context.SaveChanges();
+                }
+            }
         }
     }
+    
 }
