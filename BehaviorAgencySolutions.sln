@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BehaviorAgency.Data", "Beha
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B61004F5-5B73-4823-86B6-36C202F8D848}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviorAgency.IdentityServer", "BehaviorAgency.IdentityServer\BehaviorAgency.IdentityServer.csproj", "{58164938-85AC-4E2A-BD94-6121E966AA05}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviorAgency.IdentityServer.Host", "BehaviorAgency.IdentityServer.Host\BehaviorAgency.IdentityServer.Host.csproj", "{4AB85B56-29F3-4F32-BA33-5B7051251B52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,10 +39,10 @@ Global
 		{B74711FC-C8BA-4DDB-98D9-4791A7BED439}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B74711FC-C8BA-4DDB-98D9-4791A7BED439}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B74711FC-C8BA-4DDB-98D9-4791A7BED439}.Release|Any CPU.Build.0 = Release|Any CPU
-		{58164938-85AC-4E2A-BD94-6121E966AA05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{58164938-85AC-4E2A-BD94-6121E966AA05}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{58164938-85AC-4E2A-BD94-6121E966AA05}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{58164938-85AC-4E2A-BD94-6121E966AA05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AB85B56-29F3-4F32-BA33-5B7051251B52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AB85B56-29F3-4F32-BA33-5B7051251B52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AB85B56-29F3-4F32-BA33-5B7051251B52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AB85B56-29F3-4F32-BA33-5B7051251B52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
