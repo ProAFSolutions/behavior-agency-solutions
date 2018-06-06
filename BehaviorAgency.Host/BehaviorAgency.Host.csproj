@@ -51,7 +51,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BehaviorAgency.Entities\BehaviorAgency.Entities.csproj" />
     <ProjectReference Include="..\BehaviorAgency.Services\BehaviorAgency.Services.csproj" />
   </ItemGroup>
 

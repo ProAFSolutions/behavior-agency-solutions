@@ -1,8 +1,9 @@
 ﻿using System;
+using BehaviorAgency.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace BehaviorAgency.Data.Models
+namespace BehaviorAgency.Data.Entities
 {
     public partial class DataContext : DbContext
     {
@@ -15,12 +16,11 @@ namespace BehaviorAgency.Data.Models
         {
         }
 
-        public virtual DbSet<Agency> Agency { get; set; }
-        public virtual DbSet<Analyst> Analyst { get; set; }
-        public virtual DbSet<Customer> Customer { get; set; }
-        public virtual DbSet<Rbt> Rbt { get; set; }
-        public virtual DbSet<User> User { get; set; }
-        public virtual DbSet<UserAccount> UserAccount { get; set; }
+        public virtual DbSet<AgencyInfo> AgencyInfo { get; set; }
+        public virtual DbSet<CustomerInfo> CustomerInfo { get; set; }
+        public virtual DbSet<Document> Document { get; set; }
+        public virtual DbSet<DocumentType> DocumentType { get; set; }
+        public virtual DbSet<UserInfo> UserInfo { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -33,7 +33,7 @@ namespace BehaviorAgency.Data.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Agency>(entity =>
+            modelBuilder.Entity<AgencyInfo>(entity =>
             {
                 entity.Property(e => e.AgencyId).ValueGeneratedNever();
 
@@ -52,52 +52,47 @@ namespace BehaviorAgency.Data.Models
                 entity.Property(e => e.ZipCode).IsUnicode(false);
             });
 
-            modelBuilder.Entity<Analyst>(entity =>
+            modelBuilder.Entity<Document>(entity =>
             {
-                entity.Property(e => e.AnalystLastName).IsUnicode(false);
+                entity.Property(e => e.DocName).IsUnicode(false);
 
-                entity.Property(e => e.AnalystName).IsUnicode(false);
+                entity.HasOne(d => d.DocType)
+                    .WithMany(p => p.Document)
+                    .HasForeignKey(d => d.DocTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Document_DocumentType");
             });
 
-            modelBuilder.Entity<Rbt>(entity =>
+            modelBuilder.Entity<DocumentType>(entity =>
             {
-                entity.Property(e => e.RbtName).IsUnicode(false);
+                entity.Property(e => e.DocTypeId).ValueGeneratedNever();
+
+                entity.Property(e => e.DocTypeName).IsUnicode(false);
             });
 
-            modelBuilder.Entity<User>(entity =>
+            modelBuilder.Entity<UserInfo>(entity =>
             {
+                entity.HasIndex(e => e.UserId)
+                    .HasName("IX_UserInfo")
+                    .IsUnique();
+
                 entity.Property(e => e.Address1).IsUnicode(false);
 
                 entity.Property(e => e.Address2).IsUnicode(false);
 
                 entity.Property(e => e.City).IsUnicode(false);
 
-                entity.Property(e => e.Country).IsUnicode(false);
+                entity.Property(e => e.Email).IsUnicode(false);
 
-                entity.Property(e => e.State).IsUnicode(false);
+                entity.Property(e => e.LastName).IsUnicode(false);
 
-                entity.Property(e => e.ZipCode).IsUnicode(false);
-            });
+                entity.Property(e => e.MiddleName).IsUnicode(false);
 
-            modelBuilder.Entity<UserAccount>(entity =>
-            {
-                entity.HasIndex(e => e.UserId)
-                    .HasName("IX_UserAccount")
-                    .IsUnique();
+                entity.Property(e => e.Mobile).IsUnicode(false);
 
-                entity.Property(e => e.UserId).ValueGeneratedNever();
+                entity.Property(e => e.Name).IsUnicode(false);
 
-                entity.Property(e => e.ProviderName).IsUnicode(false);
-
-                entity.Property(e => e.ProviderSubjectId).IsUnicode(false);
-
-                entity.Property(e => e.UserName).IsUnicode(false);
-
-                entity.HasOne(d => d.User)
-                    .WithOne(p => p.UserAccount)
-                    .HasForeignKey<UserAccount>(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserAccount_User");
+                entity.Property(e => e.SecondaryPhone).IsUnicode(false);
             });
         }
     }

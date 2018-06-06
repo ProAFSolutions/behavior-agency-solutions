@@ -9,13 +9,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Business", "Business", "{D9
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BehaviorAgency.Services", "BehaviorAgency.Services\BehaviorAgency.Services.csproj", "{2D59CA07-4323-4835-863C-FB764FBF4750}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BehaviorAgency.Entities", "BehaviorAgency.Entities\BehaviorAgency.Entities.csproj", "{B3ED77FC-A9AA-4BA1-A7AA-8A6BDBB9A7D5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BehaviorAgency.Data", "BehaviorAgency.Data\BehaviorAgency.Data.csproj", "{B74711FC-C8BA-4DDB-98D9-4791A7BED439}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B61004F5-5B73-4823-86B6-36C202F8D848}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviorAgency.IdentityServer.Host", "BehaviorAgency.IdentityServer.Host\BehaviorAgency.IdentityServer.Host.csproj", "{4AB85B56-29F3-4F32-BA33-5B7051251B52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviorAgency.Api", "BehaviorAgency.Api\BehaviorAgency.Api.csproj", "{F623BADD-D65E-4E3F-B194-F8DE2A7DCEF9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{DD2805D1-E3C7-44FE-8FF3-3099C48D7AA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviorAgency.Infrastructure", "BehaviorAgency.Infrastructure\BehaviorAgency.Infrastructure.csproj", "{FE5C4025-DA95-47FE-8C03-AB221F4B09B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +35,6 @@ Global
 		{2D59CA07-4323-4835-863C-FB764FBF4750}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D59CA07-4323-4835-863C-FB764FBF4750}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D59CA07-4323-4835-863C-FB764FBF4750}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B3ED77FC-A9AA-4BA1-A7AA-8A6BDBB9A7D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B3ED77FC-A9AA-4BA1-A7AA-8A6BDBB9A7D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B3ED77FC-A9AA-4BA1-A7AA-8A6BDBB9A7D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B3ED77FC-A9AA-4BA1-A7AA-8A6BDBB9A7D5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B74711FC-C8BA-4DDB-98D9-4791A7BED439}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B74711FC-C8BA-4DDB-98D9-4791A7BED439}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B74711FC-C8BA-4DDB-98D9-4791A7BED439}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -43,14 +43,22 @@ Global
 		{4AB85B56-29F3-4F32-BA33-5B7051251B52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4AB85B56-29F3-4F32-BA33-5B7051251B52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4AB85B56-29F3-4F32-BA33-5B7051251B52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F623BADD-D65E-4E3F-B194-F8DE2A7DCEF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F623BADD-D65E-4E3F-B194-F8DE2A7DCEF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F623BADD-D65E-4E3F-B194-F8DE2A7DCEF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F623BADD-D65E-4E3F-B194-F8DE2A7DCEF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE5C4025-DA95-47FE-8C03-AB221F4B09B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE5C4025-DA95-47FE-8C03-AB221F4B09B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE5C4025-DA95-47FE-8C03-AB221F4B09B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE5C4025-DA95-47FE-8C03-AB221F4B09B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2D59CA07-4323-4835-863C-FB764FBF4750} = {D9B8D8CE-9418-408E-B404-C93FF4590D8C}
-		{B3ED77FC-A9AA-4BA1-A7AA-8A6BDBB9A7D5} = {D9B8D8CE-9418-408E-B404-C93FF4590D8C}
 		{B74711FC-C8BA-4DDB-98D9-4791A7BED439} = {D9B8D8CE-9418-408E-B404-C93FF4590D8C}
+		{FE5C4025-DA95-47FE-8C03-AB221F4B09B5} = {DD2805D1-E3C7-44FE-8FF3-3099C48D7AA0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7FD2C66B-26EB-4744-BB57-31D472CC1C53}

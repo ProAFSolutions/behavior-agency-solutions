@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BehaviorAgency.Data.Models
+namespace BehaviorAgency.Data.Entities
 {
-    public partial class Analyst
+    public partial class CustomerInfo : IAuditable
     {
-        public int AnalystId { get; set; }
+        [Key]
+        public int CustomerId { get; set; }
         [Required]
         [StringLength(50)]
-        public string AnalystName { get; set; }
-        [Required]
-        [StringLength(50)]
-        public string AnalystLastName { get; set; }
+        public string CustomerName { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? CreatedOn { get; set; }
         public int? CreatedBy { get; set; }

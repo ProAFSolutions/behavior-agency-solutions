@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using BehaviorAgency.Host.Models;
+using BehaviorAgency.Host.ViewModels;
 using Microsoft.Extensions.Configuration;
 using BehaviorAgency.Host.Utils;
 

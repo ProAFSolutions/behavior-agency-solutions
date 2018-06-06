@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BehaviorAgency.Host.Controllers.Api
+namespace BehaviorAgency.Api.Controllers
 {
+
     [Route("api/agencies")]
-    public class AgenciesController : Controller
+    public class AgenciesController : ApiController
     {
         // GET: api/Agencies
         [HttpGet]
@@ -24,7 +25,11 @@ namespace BehaviorAgency.Host.Controllers.Api
             return "value";
         }
         
-       
+        // POST: api/Agencies
+        [HttpPost]
+        public void Post([FromBody]string value)
+        {
+        }
         
         // PUT: api/Agencies/5
         [HttpPut("{id}")]
@@ -32,6 +37,10 @@ namespace BehaviorAgency.Host.Controllers.Api
         {
         }
         
-       
+        // DELETE: api/ApiWithActions/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
+        }
     }
 }

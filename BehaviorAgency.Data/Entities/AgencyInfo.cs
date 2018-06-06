@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BehaviorAgency.Data.Models
+namespace BehaviorAgency.Data.Entities
 {
-    public partial class Agency
+    public partial class AgencyInfo : IAuditable
     {
+        [Key]
         public int AgencyId { get; set; }
         [Required]
         [StringLength(50)]
@@ -28,5 +29,11 @@ namespace BehaviorAgency.Data.Models
         public string State { get; set; }
         [StringLength(50)]
         public string Country { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime? CreatedOn { get; set; }
+        public int? CreatedBy { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime? LastModifiedOn { get; set; }
+        public int? LastModifiedBy { get; set; }
     }
 }

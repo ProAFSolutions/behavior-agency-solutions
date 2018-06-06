@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BehaviorAgency.Data\BehaviorAgency.Data.csproj" />
-    <ProjectReference Include="..\BehaviorAgency.Entities\BehaviorAgency.Entities.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 using System;
 
-namespace BehaviorAgency.Host.Models
+namespace BehaviorAgency.Host.ViewModels
 {
     public class ErrorViewModel
     {
