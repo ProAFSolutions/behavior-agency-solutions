@@ -4,7 +4,8 @@ using System.Text;
 
 namespace BehaviorAgency.Services
 {
-    public interface IUserService
+    public interface IUserService 
     {
+
     }
 }

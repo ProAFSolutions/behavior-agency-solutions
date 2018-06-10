@@ -5,18 +5,27 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BehaviorAgency.Data.Entities
 {
-    public partial class CustomerInfo : IAuditable
+    public partial class CustomerInfo
     {
         [Key]
         public int CustomerId { get; set; }
         [Required]
         [StringLength(50)]
         public string CustomerName { get; set; }
+        [StringLength(20)]
+        public string NaturalLanguage { get; set; }
+        public bool? Multilingual { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? CreatedOn { get; set; }
         public int? CreatedBy { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? LastModifiedOn { get; set; }
         public int? LastModifiedBy { get; set; }
+        public bool? IsDeleted { get; set; }
+        public int AddressId { get; set; }
+
+        [ForeignKey("AddressId")]
+        [InverseProperty("CustomerInfo")]
+        public Address Address { get; set; }
     }
 }

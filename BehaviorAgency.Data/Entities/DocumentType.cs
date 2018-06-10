@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BehaviorAgency.Data.Entities
 {
-    public partial class DocumentType : IAuditable
+    public partial class DocumentType
     {
         public DocumentType()
         {
@@ -19,13 +19,18 @@ namespace BehaviorAgency.Data.Entities
         public string DocTypeName { get; set; }
         [Column(TypeName = "text")]
         public string DocTypeDesc { get; set; }
+        public int? DocCategoryId { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? CreatedOn { get; set; }
         public int? CreatedBy { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? LastModifiedOn { get; set; }
         public int? LastModifiedBy { get; set; }
+        public bool? IsDeleted { get; set; }
 
+        [ForeignKey("DocCategoryId")]
+        [InverseProperty("DocumentType")]
+        public DocumentCategory DocCategory { get; set; }
         [InverseProperty("DocType")]
         public ICollection<Document> Document { get; set; }
     }

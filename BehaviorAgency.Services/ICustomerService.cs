@@ -6,5 +6,6 @@ namespace BehaviorAgency.Services
 {
     public interface ICustomerService
     {
+
     }
 }

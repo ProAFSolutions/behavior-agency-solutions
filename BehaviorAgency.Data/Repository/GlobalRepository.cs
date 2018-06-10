@@ -1,34 +1,49 @@
-﻿using BehaviorAgency.Data.Entities;
+﻿using BehaviorAgency.Data.Context;
+using BehaviorAgency.Data.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BehaviorAgency.Services.Impl
 {
     public interface IGlobalRepository<TEntity> where TEntity : class
     {
-        IQueryable<TEntity> FindAll();
+        IQueryable<TEntity> EntityQuery { get; }
+
+        IEnumerable<TEntity> Find(Func<TEntity, bool> condition);
 
         TEntity FindById(object id);
 
-        TEntity Insert(TEntity entity, int userId = 0);
+        TEntity Insert(TEntity entity, int userId);
 
-        void Update(TEntity entity, int userId = 0);
+        void Update(TEntity entity, int userId);
 
         void Delete(object id);
+
+        void SoftDelete(object id, int userId);
     }
 
     public class GlobalRepository<TEntity> : IGlobalRepository<TEntity> where TEntity : class 
     {
-        protected readonly DataContext _dbContext;
+        protected readonly AppDataContext _dbContext;
 
-        public GlobalRepository(DataContext dbContext)
+        public GlobalRepository(AppDataContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public IQueryable<TEntity> FindAll()
+        public IQueryable<TEntity> EntityQuery
         {
-            return _dbContext.Set<TEntity>();
+            get {
+                return _dbContext.Set<TEntity>();
+            }
+        }
+
+        public IEnumerable<TEntity> Find(Func<TEntity, bool> condition)
+        { 
+            return _dbContext.Set<TEntity>().Where(condition);
         }
 
         public TEntity FindById(object id)
@@ -45,40 +60,74 @@ namespace BehaviorAgency.Services.Impl
             SaveChanges();
         }
 
-        public TEntity Insert(TEntity entity, int userId = 0)
+        public void SoftDelete(object id, int userId)
         {
-            if (entity is IAuditable)
-            {
-                var auditable = entity as IAuditable;
-                auditable.CreatedBy = 0;
-                auditable.CreatedOn = DateTime.Now;
-            }
+            var entity = FindById(id);
+            var entityEntry = _dbContext.Set<TEntity>().Remove(entity);
+            entityEntry.Property("IsDeleted").CurrentValue = true;
 
+            SaveChanges(userId);
+        }
+
+        public TEntity Insert(TEntity entity, int userId)
+        {
             _dbContext.Set<TEntity>().Add(entity);
 
-            SaveChanges();
+            SaveChanges(userId);
 
             return entity;
         }
 
-        public void Update(TEntity entity, int userId = 0)
+        public void Update(TEntity entity, int userId)
         {
-            if (entity is IAuditable)
-            {
-                var auditable = entity as IAuditable;
-                auditable.LastModifiedBy = 0;
-                auditable.LastModifiedOn = DateTime.Now;
-            }
+            var entityEntry = _dbContext.Update(entity);
+            entityEntry.Property("LastModifiedBy").CurrentValue = userId;
 
-            _dbContext.Update(entity);
-
-            SaveChanges();
+            SaveChanges(userId);
         }
         
 
-        protected void SaveChanges()
+        protected void SaveChanges(int userId = 0)
         {
+            TrackChanges(userId);
+
             _dbContext.SaveChanges();
         }
+
+        private void TrackChanges(int userId) {
+
+            var modifiedEntries = _dbContext.ChangeTracker.Entries().Where(e => e.State == EntityState.Added 
+                                                                             || e.State == EntityState.Modified 
+                                                                             || e.State == EntityState.Deleted);
+            foreach (EntityEntry entry in modifiedEntries)
+            {
+                var entityType = entry.Context.Model.FindEntityType(entry.Entity.GetType());
+
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Property("IsDeleted").CurrentValue = false;
+                    entry.Property("CreatedOn").CurrentValue = DateTime.Now;
+                    entry.Property("CreatedBy").CurrentValue = userId;
+                }
+
+                else if (entry.State == EntityState.Modified)
+                {
+                    entry.Property("LastModifiedOn").CurrentValue = DateTime.Now;
+                    entry.Property("LastModifiedBy").CurrentValue = userId;
+                }
+
+                else if (entry.State == EntityState.Deleted)
+                {
+                    var isDeleted = entry.Property("IsDeleted").CurrentValue;
+                    if (Convert.ToBoolean(isDeleted)) {
+                        entry.State = EntityState.Modified;
+                        entry.Property("LastModifiedOn").CurrentValue = DateTime.Now;
+                        entry.Property("LastModifiedBy").CurrentValue = userId;
+                    }
+                }
+            }
+        }
+
+        
     }
 }
