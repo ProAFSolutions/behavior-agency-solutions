@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BehaviorAgency.Data.Context;
+using BehaviorAgency.Data.Repository;
 using BehaviorAgency.Services;
 using BehaviorAgency.Services.Impl;
 using Microsoft.AspNetCore.Builder;

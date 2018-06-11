@@ -18,6 +18,8 @@ namespace BehaviorAgency.Data.Entities
         public virtual DbSet<Address> Address { get; set; }
         public virtual DbSet<Agency> Agency { get; set; }
         public virtual DbSet<AgencyUsers> AgencyUsers { get; set; }
+        public virtual DbSet<Case> Case { get; set; }
+        public virtual DbSet<CaseStatus> CaseStatus { get; set; }
         public virtual DbSet<CustomerInfo> CustomerInfo { get; set; }
         public virtual DbSet<Document> Document { get; set; }
         public virtual DbSet<DocumentCategory> DocumentCategory { get; set; }
@@ -38,8 +40,6 @@ namespace BehaviorAgency.Data.Entities
         {
             modelBuilder.Entity<Address>(entity =>
             {
-                entity.Property(e => e.AddressId).ValueGeneratedNever();
-
                 entity.Property(e => e.Address1).IsUnicode(false);
 
                 entity.Property(e => e.Address2).IsUnicode(false);
@@ -90,6 +90,50 @@ namespace BehaviorAgency.Data.Entities
                     .HasConstraintName("FK_AgencyUsers_UserInfo");
             });
 
+            modelBuilder.Entity<Case>(entity =>
+            {
+                entity.Property(e => e.AdministeredLanguage).IsUnicode(false);
+
+                entity.Property(e => e.CaseNumber).IsUnicode(false);
+
+                entity.Property(e => e.Insurer).IsUnicode(false);
+
+                entity.Property(e => e.MedicaidNumber).IsUnicode(false);
+
+                entity.Property(e => e.PolicyNumber).IsUnicode(false);
+
+                entity.Property(e => e.SecondInsurer).IsUnicode(false);
+
+                entity.Property(e => e.SecondaryPolicyNumber).IsUnicode(false);
+
+                entity.HasOne(d => d.Analyst)
+                    .WithMany(p => p.CaseAnalyst)
+                    .HasForeignKey(d => d.AnalystId)
+                    .HasConstraintName("FK_Case_UserInfo1");
+
+                entity.HasOne(d => d.Customer)
+                    .WithMany(p => p.Case)
+                    .HasForeignKey(d => d.CustomerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Case_CustomerInfo");
+
+                entity.HasOne(d => d.Rbt)
+                    .WithMany(p => p.CaseRbt)
+                    .HasForeignKey(d => d.RbtId)
+                    .HasConstraintName("FK_Case_UserInfo");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Case)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Case_CaseStatus");
+            });
+
+            modelBuilder.Entity<CaseStatus>(entity =>
+            {
+                entity.Property(e => e.StatusId).ValueGeneratedNever();
+            });
+
             modelBuilder.Entity<CustomerInfo>(entity =>
             {
                 entity.Property(e => e.NaturalLanguage).IsUnicode(false);
@@ -119,6 +163,12 @@ namespace BehaviorAgency.Data.Entities
                     .WithMany(p => p.DocumentApprovedByNavigation)
                     .HasForeignKey(d => d.ApprovedBy)
                     .HasConstraintName("FK_Document_ApprovedByUser");
+
+                entity.HasOne(d => d.DocCategory)
+                    .WithMany(p => p.Document)
+                    .HasForeignKey(d => d.DocCategoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Document_DocumentCategory");
 
                 entity.HasOne(d => d.DocType)
                     .WithMany(p => p.Document)
@@ -164,9 +214,15 @@ namespace BehaviorAgency.Data.Entities
 
                 entity.Property(e => e.DocTypeName).IsUnicode(false);
 
+                entity.HasOne(d => d.Agency)
+                    .WithMany(p => p.DocumentType)
+                    .HasForeignKey(d => d.AgencyId)
+                    .HasConstraintName("FK_DocumentType_Agency");
+
                 entity.HasOne(d => d.DocCategory)
                     .WithMany(p => p.DocumentType)
                     .HasForeignKey(d => d.DocCategoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DocumentType_DocumentCategory");
             });
 

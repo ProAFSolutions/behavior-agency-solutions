@@ -9,6 +9,7 @@ namespace BehaviorAgency.Data.Entities
     {
         public DocumentCategory()
         {
+            Document = new HashSet<Document>();
             DocumentType = new HashSet<DocumentType>();
         }
 
@@ -18,6 +19,8 @@ namespace BehaviorAgency.Data.Entities
         [StringLength(50)]
         public string DocCategoryName { get; set; }
 
+        [InverseProperty("DocCategory")]
+        public ICollection<Document> Document { get; set; }
         [InverseProperty("DocCategory")]
         public ICollection<DocumentType> DocumentType { get; set; }
     }

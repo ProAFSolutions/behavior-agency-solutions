@@ -11,6 +11,7 @@ namespace BehaviorAgency.Data.Entities
         {
             AgencyUsers = new HashSet<AgencyUsers>();
             Document = new HashSet<Document>();
+            DocumentType = new HashSet<DocumentType>();
         }
 
         public int AgencyId { get; set; }
@@ -39,5 +40,7 @@ namespace BehaviorAgency.Data.Entities
         public ICollection<AgencyUsers> AgencyUsers { get; set; }
         [InverseProperty("Agency")]
         public ICollection<Document> Document { get; set; }
+        [InverseProperty("Agency")]
+        public ICollection<DocumentType> DocumentType { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using BehaviorAgency.Data.Entities;
 using System.Linq;
+using BehaviorAgency.Data.Repository;
 
 namespace BehaviorAgency.Services.Impl
 {

@@ -10,6 +10,7 @@ namespace BehaviorAgency.Data.Entities
         [Key]
         public int DocId { get; set; }
         public int DocTypeId { get; set; }
+        public int DocCategoryId { get; set; }
         public int AgencyId { get; set; }
         public int UserId { get; set; }
         [Required]
@@ -44,6 +45,9 @@ namespace BehaviorAgency.Data.Entities
         [ForeignKey("ApprovedBy")]
         [InverseProperty("DocumentApprovedByNavigation")]
         public UserInfo ApprovedByNavigation { get; set; }
+        [ForeignKey("DocCategoryId")]
+        [InverseProperty("Document")]
+        public DocumentCategory DocCategory { get; set; }
         [ForeignKey("DocTypeId")]
         [InverseProperty("Document")]
         public DocumentType DocType { get; set; }

@@ -27,7 +27,10 @@ namespace BehaviorAgency.Data.Context
             modelBuilder.Entity<UserInfo>().HasQueryFilter(x => x.IsDeleted.HasValue && !x.IsDeleted.Value);
             modelBuilder.Entity<AgencyUsers>().HasQueryFilter(x => x.IsDeleted.HasValue && !x.IsDeleted.Value);
             modelBuilder.Entity<Document>().HasQueryFilter(x => x.IsDeleted.HasValue && !x.IsDeleted.Value);
+            modelBuilder.Entity<DocumentType>().HasQueryFilter(x => x.IsDeleted.HasValue && !x.IsDeleted.Value);
             modelBuilder.Entity<CustomerInfo>().HasQueryFilter(x => x.IsDeleted.HasValue && !x.IsDeleted.Value);
+            modelBuilder.Entity<Case>().HasQueryFilter(x => x.IsDeleted.HasValue && !x.IsDeleted.Value);
+
         }
     }
 }

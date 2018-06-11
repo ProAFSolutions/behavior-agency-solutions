@@ -19,7 +19,8 @@ namespace BehaviorAgency.Data.Entities
         public string DocTypeName { get; set; }
         [Column(TypeName = "text")]
         public string DocTypeDesc { get; set; }
-        public int? DocCategoryId { get; set; }
+        public int DocCategoryId { get; set; }
+        public int? AgencyId { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? CreatedOn { get; set; }
         public int? CreatedBy { get; set; }
@@ -28,6 +29,9 @@ namespace BehaviorAgency.Data.Entities
         public int? LastModifiedBy { get; set; }
         public bool? IsDeleted { get; set; }
 
+        [ForeignKey("AgencyId")]
+        [InverseProperty("DocumentType")]
+        public Agency Agency { get; set; }
         [ForeignKey("DocCategoryId")]
         [InverseProperty("DocumentType")]
         public DocumentCategory DocCategory { get; set; }

@@ -10,6 +10,8 @@ namespace BehaviorAgency.Data.Entities
         public UserInfo()
         {
             AgencyUsers = new HashSet<AgencyUsers>();
+            CaseAnalyst = new HashSet<Case>();
+            CaseRbt = new HashSet<Case>();
             DocumentApprovedByNavigation = new HashSet<Document>();
             DocumentRejectedByNavigation = new HashSet<Document>();
             DocumentReviewedByNavigation = new HashSet<Document>();
@@ -57,6 +59,10 @@ namespace BehaviorAgency.Data.Entities
         public UserSettings UserSettings { get; set; }
         [InverseProperty("User")]
         public ICollection<AgencyUsers> AgencyUsers { get; set; }
+        [InverseProperty("Analyst")]
+        public ICollection<Case> CaseAnalyst { get; set; }
+        [InverseProperty("Rbt")]
+        public ICollection<Case> CaseRbt { get; set; }
         [InverseProperty("ApprovedByNavigation")]
         public ICollection<Document> DocumentApprovedByNavigation { get; set; }
         [InverseProperty("RejectedByNavigation")]

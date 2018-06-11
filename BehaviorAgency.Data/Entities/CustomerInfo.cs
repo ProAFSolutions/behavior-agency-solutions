@@ -7,6 +7,11 @@ namespace BehaviorAgency.Data.Entities
 {
     public partial class CustomerInfo
     {
+        public CustomerInfo()
+        {
+            Case = new HashSet<Case>();
+        }
+
         [Key]
         public int CustomerId { get; set; }
         [Required]
@@ -27,5 +32,7 @@ namespace BehaviorAgency.Data.Entities
         [ForeignKey("AddressId")]
         [InverseProperty("CustomerInfo")]
         public Address Address { get; set; }
+        [InverseProperty("Customer")]
+        public ICollection<Case> Case { get; set; }
     }
 }
