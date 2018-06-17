@@ -14,9 +14,13 @@ namespace BehaviorAgency.Data.Entities
 
         [Key]
         public int CustomerId { get; set; }
+        public int AddressId { get; set; }
         [Required]
         [StringLength(50)]
         public string CustomerName { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string CustomerLastName { get; set; }
         [StringLength(20)]
         public string NaturalLanguage { get; set; }
         public bool? Multilingual { get; set; }
@@ -27,7 +31,6 @@ namespace BehaviorAgency.Data.Entities
         public DateTime? LastModifiedOn { get; set; }
         public int? LastModifiedBy { get; set; }
         public bool? IsDeleted { get; set; }
-        public int AddressId { get; set; }
 
         [ForeignKey("AddressId")]
         [InverseProperty("CustomerInfo")]

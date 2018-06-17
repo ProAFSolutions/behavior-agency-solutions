@@ -17,6 +17,7 @@ namespace BehaviorAgency.Data.Repository
         public GlobalRepository(AppDataContext dbContext)
         {
             _dbContext = dbContext;
+            
         }
 
         public IQueryable<TEntity> EntityQuery

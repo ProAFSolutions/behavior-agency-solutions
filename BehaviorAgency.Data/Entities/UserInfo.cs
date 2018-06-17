@@ -9,7 +9,6 @@ namespace BehaviorAgency.Data.Entities
     {
         public UserInfo()
         {
-            AgencyUsers = new HashSet<AgencyUsers>();
             CaseAnalyst = new HashSet<Case>();
             CaseRbt = new HashSet<Case>();
             DocumentApprovedByNavigation = new HashSet<Document>();
@@ -21,7 +20,7 @@ namespace BehaviorAgency.Data.Entities
         [Key]
         public int UserId { get; set; }
         [StringLength(450)]
-        public string AspNetUserId { get; set; }
+        public string IdServUserId { get; set; }
         public int? AddressId { get; set; }
         [Required]
         [StringLength(50)]
@@ -57,8 +56,6 @@ namespace BehaviorAgency.Data.Entities
         public Address Address { get; set; }
         [InverseProperty("User")]
         public UserSettings UserSettings { get; set; }
-        [InverseProperty("User")]
-        public ICollection<AgencyUsers> AgencyUsers { get; set; }
         [InverseProperty("Analyst")]
         public ICollection<Case> CaseAnalyst { get; set; }
         [InverseProperty("Rbt")]

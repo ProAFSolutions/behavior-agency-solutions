@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
   </ItemGroup>
@@ -18,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BehaviorAgency.Data\BehaviorAgency.Data.csproj" />
     <ProjectReference Include="..\BehaviorAgency.Infrastructure\BehaviorAgency.Infrastructure.csproj" />
     <ProjectReference Include="..\BehaviorAgency.Services\BehaviorAgency.Services.csproj" />
   </ItemGroup>

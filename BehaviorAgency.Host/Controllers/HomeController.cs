@@ -6,10 +6,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using BehaviorAgency.Host.ViewModels;
 using Microsoft.Extensions.Configuration;
-using BehaviorAgency.Host.Utils;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
+using System.Net.Http;
+using Newtonsoft.Json.Linq;
+using BehaviorAgency.Host.Core;
 
 namespace BehaviorAgency.Host.Controllers.Web
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly string _indexHtmlSourcePath;
@@ -20,15 +25,22 @@ namespace BehaviorAgency.Host.Controllers.Web
 
         public IActionResult Index()
         {
-            Prepare();
+            InjectHtmlResources();
+
             return View();
         }
 
-        private void Prepare() {
-            var htmlHelper = new HtmlAgilityPackHelper(_indexHtmlSourcePath);
-            ViewBag.Links = htmlHelper.Links;
-            ViewBag.Styles = htmlHelper.Styles;
-            ViewBag.Scripts = htmlHelper.Scripts;
+        public async Task Logout()
+        {
+            await HttpContext.SignOutAsync("Cookies");
+            await HttpContext.SignOutAsync("oidc");
+        }
+
+        private void InjectHtmlResources() {
+            var htmlHandler = new HtmlAgilityPackHandler(_indexHtmlSourcePath);
+            ViewBag.Links = htmlHandler.Links;
+            ViewBag.Styles = htmlHandler.Styles;
+            ViewBag.Scripts = htmlHandler.Scripts;
         }
 
     }

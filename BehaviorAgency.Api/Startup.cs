@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BehaviorAgency.Data.Context;
 using BehaviorAgency.Data.Repository;
+using BehaviorAgency.Infrastructure;
 using BehaviorAgency.Services;
 using BehaviorAgency.Services.Impl;
 using Microsoft.AspNetCore.Builder;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
 
 namespace BehaviorAgency.Api
 {
@@ -29,12 +31,27 @@ namespace BehaviorAgency.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(options => {
-                options.Filters.Add(new ProducesAttribute("application/json"));
-            });
+            services.AddMvcCore()
+                    .AddAuthorization()
+                    .AddJsonFormatters()
+                    .AddMvcOptions(options =>
+                    {
+                        options.Filters.Add(new ProducesAttribute("application/json"));
+                    });
+
+            services.AddAuthentication("Bearer")
+                    .AddIdentityServerAuthentication(options =>
+                    {
+                        options.RequireHttpsMetadata = false;
+                        options.Authority = Configuration.GetValue<string>("IdentityServerUrl");
+                        options.ApiName = "ba_api";
+                        options.ApiSecret = CryptoManager.EncryptSHA1("B@gency4Ever");
+                    });
+
+            //services.AddCors();
 
             //EF Setup
-            services.AddDbContext<AppDataContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<AppDataContext>();
 
             // Add application services.
             services.AddScoped(typeof(IGlobalRepository<>), typeof(GlobalRepository<>));
@@ -51,6 +68,16 @@ namespace BehaviorAgency.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            //app.UseCors(policy =>
+            //{
+            //    policy.WithOrigins(Configuration.GetValue<string[]>("ClientUrls"));
+            //    policy.AllowAnyMethod();
+            //    policy.AllowAnyHeader();
+            //    policy.WithHeaders("AgencyCode");
+            //});
+
+            app.UseAuthentication();
 
             app.UseMvc();
         }

@@ -11,8 +11,8 @@ namespace BehaviorAgency.Data.Entities
         public int DocId { get; set; }
         public int DocTypeId { get; set; }
         public int DocCategoryId { get; set; }
-        public int AgencyId { get; set; }
         public int UserId { get; set; }
+        public int DocStatusId { get; set; }
         [Required]
         [StringLength(50)]
         public string DocName { get; set; }
@@ -39,15 +39,15 @@ namespace BehaviorAgency.Data.Entities
         public int? LastModifiedBy { get; set; }
         public bool? IsDeleted { get; set; }
 
-        [ForeignKey("AgencyId")]
-        [InverseProperty("Document")]
-        public Agency Agency { get; set; }
         [ForeignKey("ApprovedBy")]
         [InverseProperty("DocumentApprovedByNavigation")]
         public UserInfo ApprovedByNavigation { get; set; }
         [ForeignKey("DocCategoryId")]
         [InverseProperty("Document")]
         public DocumentCategory DocCategory { get; set; }
+        [ForeignKey("DocStatusId")]
+        [InverseProperty("Document")]
+        public DocumentStatus DocStatus { get; set; }
         [ForeignKey("DocTypeId")]
         [InverseProperty("Document")]
         public DocumentType DocType { get; set; }

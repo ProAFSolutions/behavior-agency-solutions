@@ -16,13 +16,13 @@ namespace BehaviorAgency.Data.Entities
         }
 
         public virtual DbSet<Address> Address { get; set; }
-        public virtual DbSet<Agency> Agency { get; set; }
-        public virtual DbSet<AgencyUsers> AgencyUsers { get; set; }
+        public virtual DbSet<AgencySelf> AgencySelf { get; set; }
         public virtual DbSet<Case> Case { get; set; }
         public virtual DbSet<CaseStatus> CaseStatus { get; set; }
         public virtual DbSet<CustomerInfo> CustomerInfo { get; set; }
         public virtual DbSet<Document> Document { get; set; }
         public virtual DbSet<DocumentCategory> DocumentCategory { get; set; }
+        public virtual DbSet<DocumentStatus> DocumentStatus { get; set; }
         public virtual DbSet<DocumentType> DocumentType { get; set; }
         public virtual DbSet<UserInfo> UserInfo { get; set; }
         public virtual DbSet<UserSettings> UserSettings { get; set; }
@@ -51,43 +51,11 @@ namespace BehaviorAgency.Data.Entities
                 entity.Property(e => e.ZipCode).IsUnicode(false);
             });
 
-            modelBuilder.Entity<Agency>(entity =>
+            modelBuilder.Entity<AgencySelf>(entity =>
             {
-                entity.Property(e => e.AgencyId).ValueGeneratedNever();
+                entity.Property(e => e.IdServAgencyId).ValueGeneratedNever();
 
                 entity.Property(e => e.AgencyName).IsUnicode(false);
-
-                entity.Property(e => e.DropBoxClientId).IsUnicode(false);
-
-                entity.Property(e => e.DropBoxClientSecret).IsUnicode(false);
-
-                entity.Property(e => e.GoogleClientId).IsUnicode(false);
-
-                entity.Property(e => e.GoogleClientSecret).IsUnicode(false);
-
-                entity.HasOne(d => d.Address)
-                    .WithMany(p => p.Agency)
-                    .HasForeignKey(d => d.AddressId)
-                    .HasConstraintName("FK_Agency_Address");
-            });
-
-            modelBuilder.Entity<AgencyUsers>(entity =>
-            {
-                entity.HasIndex(e => new { e.AgencyId, e.UserId })
-                    .HasName("IX_AgencyUsers")
-                    .IsUnique();
-
-                entity.HasOne(d => d.Agency)
-                    .WithMany(p => p.AgencyUsers)
-                    .HasForeignKey(d => d.AgencyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_AgencyUsers_Agency");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.AgencyUsers)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_AgencyUsers_UserInfo");
             });
 
             modelBuilder.Entity<Case>(entity =>
@@ -136,6 +104,10 @@ namespace BehaviorAgency.Data.Entities
 
             modelBuilder.Entity<CustomerInfo>(entity =>
             {
+                entity.Property(e => e.CustomerLastName).IsUnicode(false);
+
+                entity.Property(e => e.CustomerName).IsUnicode(false);
+
                 entity.Property(e => e.NaturalLanguage).IsUnicode(false);
 
                 entity.HasOne(d => d.Address)
@@ -153,12 +125,6 @@ namespace BehaviorAgency.Data.Entities
 
                 entity.Property(e => e.DocPath).IsUnicode(false);
 
-                entity.HasOne(d => d.Agency)
-                    .WithMany(p => p.Document)
-                    .HasForeignKey(d => d.AgencyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Document_Agency");
-
                 entity.HasOne(d => d.ApprovedByNavigation)
                     .WithMany(p => p.DocumentApprovedByNavigation)
                     .HasForeignKey(d => d.ApprovedBy)
@@ -169,6 +135,12 @@ namespace BehaviorAgency.Data.Entities
                     .HasForeignKey(d => d.DocCategoryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Document_DocumentCategory");
+
+                entity.HasOne(d => d.DocStatus)
+                    .WithMany(p => p.Document)
+                    .HasForeignKey(d => d.DocStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Document_DocumentStatus");
 
                 entity.HasOne(d => d.DocType)
                     .WithMany(p => p.Document)
@@ -204,6 +176,13 @@ namespace BehaviorAgency.Data.Entities
                 entity.Property(e => e.DocCategoryName).IsUnicode(false);
             });
 
+            modelBuilder.Entity<DocumentStatus>(entity =>
+            {
+                entity.Property(e => e.DocStatus).ValueGeneratedNever();
+
+                entity.Property(e => e.Status).IsUnicode(false);
+            });
+
             modelBuilder.Entity<DocumentType>(entity =>
             {
                 entity.HasIndex(e => e.DocTypeId)
@@ -213,11 +192,6 @@ namespace BehaviorAgency.Data.Entities
                 entity.Property(e => e.DocTypeId).ValueGeneratedNever();
 
                 entity.Property(e => e.DocTypeName).IsUnicode(false);
-
-                entity.HasOne(d => d.Agency)
-                    .WithMany(p => p.DocumentType)
-                    .HasForeignKey(d => d.AgencyId)
-                    .HasConstraintName("FK_DocumentType_Agency");
 
                 entity.HasOne(d => d.DocCategory)
                     .WithMany(p => p.DocumentType)

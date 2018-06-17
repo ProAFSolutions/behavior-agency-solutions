@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BehaviorAgency.Host.Utils
+namespace BehaviorAgency.Host.Core
 {
-    public class HtmlAgilityPackHelper
+    public class HtmlAgilityPackHandler
     {
         private HtmlDocument _document;
 
-        public HtmlAgilityPackHelper(string htmlFilePath) {
+        public HtmlAgilityPackHandler(string htmlFilePath) {
             _document = new HtmlDocument();
             _document.Load(htmlFilePath);
         }

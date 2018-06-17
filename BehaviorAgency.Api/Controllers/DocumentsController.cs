@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BehaviorAgency.Api.Dto;
 using BehaviorAgency.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using BehaviorAgency.Services.Dto;
 
 namespace BehaviorAgency.Api.Controllers
 {
@@ -30,8 +30,7 @@ namespace BehaviorAgency.Api.Controllers
         [HttpGet("{id}")]
         public DocumentDto Get(int id)
         {
-            var doc = _documentService.GetDocumentById(id);
-            return new DocumentDto(doc);
+            return _documentService.GetDocumentById(id);
         }
         
         // POST: api/Documents

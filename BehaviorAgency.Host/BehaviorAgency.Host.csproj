@@ -6,16 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Core\**" />
     <Compile Remove="wwwroot\e2e\**" />
     <Compile Remove="wwwroot\src\**" />
-    <Content Remove="Core\**" />
     <Content Remove="wwwroot\e2e\**" />
     <Content Remove="wwwroot\src\**" />
-    <EmbeddedResource Remove="Core\**" />
     <EmbeddedResource Remove="wwwroot\e2e\**" />
     <EmbeddedResource Remove="wwwroot\src\**" />
-    <None Remove="Core\**" />
     <None Remove="wwwroot\e2e\**" />
     <None Remove="wwwroot\src\**" />
   </ItemGroup>
@@ -38,6 +34,7 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.8.4" />
+    <PackageReference Include="IdentityModel" Version="3.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
   </ItemGroup>
@@ -51,7 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BehaviorAgency.Services\BehaviorAgency.Services.csproj" />
+    <ProjectReference Include="..\BehaviorAgency.Infrastructure\BehaviorAgency.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

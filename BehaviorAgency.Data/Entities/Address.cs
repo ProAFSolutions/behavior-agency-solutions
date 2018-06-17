@@ -9,7 +9,6 @@ namespace BehaviorAgency.Data.Entities
     {
         public Address()
         {
-            Agency = new HashSet<Agency>();
             CustomerInfo = new HashSet<CustomerInfo>();
             UserInfo = new HashSet<UserInfo>();
         }
@@ -26,6 +25,9 @@ namespace BehaviorAgency.Data.Entities
         [Required]
         [StringLength(10)]
         public string ZipCode { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string State { get; set; }
         [StringLength(3)]
         public string CountryCode { get; set; }
         [Column(TypeName = "datetime")]
@@ -35,12 +37,7 @@ namespace BehaviorAgency.Data.Entities
         public DateTime? LastModifiedOn { get; set; }
         public int? LastModifiedBy { get; set; }
         public bool? IsDeleted { get; set; }
-        [Required]
-        [StringLength(50)]
-        public string State { get; set; }
 
-        [InverseProperty("Address")]
-        public ICollection<Agency> Agency { get; set; }
         [InverseProperty("Address")]
         public ICollection<CustomerInfo> CustomerInfo { get; set; }
         [InverseProperty("Address")]
