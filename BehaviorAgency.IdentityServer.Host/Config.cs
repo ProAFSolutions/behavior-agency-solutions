@@ -1,9 +1,13 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using BehaviorAgency.Infrastructure;
+using BehaviorAgency.Infrastructure.Security;
+using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Models;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace BehaviorAgency.IdentityServer.Host
 {
@@ -16,6 +20,17 @@ namespace BehaviorAgency.IdentityServer.Host
             {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
+                new IdentityResource {
+                    Name = CustomResourceScopes.AgencyProfile,
+                    DisplayName = "Agency Profile",
+                    Required = false,
+                    UserClaims = {
+                        JwtClaimTypes.Role,
+                        CustomClaimTypes.AgencyCode
+                    },
+                    ShowInDiscoveryDocument = true,
+                    Enabled = true
+                }
             };
         }
 
@@ -23,7 +38,22 @@ namespace BehaviorAgency.IdentityServer.Host
         {
             return new List<ApiResource>
             {
-                new ApiResource("api1", "My API")
+                new ApiResource {
+                    Name = CustomResourceScopes.AgencyApi,
+                    DisplayName = "BA API",
+
+                    // secret for using introspection endpoint
+                    ApiSecrets = {
+                        new Secret(CryptoManager.EncryptSHA256("B@gencyApi4Ever"))
+                    },
+
+                     // include the following using claims in access token (in addition to subject id)
+                    UserClaims = {
+                        JwtClaimTypes.Role,
+                        CustomClaimTypes.AgencyCode
+                    },
+                    Enabled = true,
+                }
             };
         }
 
@@ -33,43 +63,18 @@ namespace BehaviorAgency.IdentityServer.Host
             // client credentials client
             return new List<Client>
             {
-                new Client
-                {
-                    ClientId = "client",
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-
-                    ClientSecrets = 
-                    {
-                        new Secret("secret".Sha256())
-                    },
-                    AllowedScopes = { "api1" }
-                },
-
-                // resource owner password grant client
-                new Client
-                {
-                    ClientId = "ro.client",
-                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-
-                    ClientSecrets = 
-                    {
-                        new Secret("secret".Sha256())
-                    },
-                    AllowedScopes = { "api1" }
-                },
-
                 // OpenID Connect hybrid flow and client credentials client (MVC)
                 new Client
                 {
-                    ClientId = "mvc",
-                    ClientName = "MVC Client",
+                    ClientId = "ba_web",
+                    ClientName = "BA Web Platform",
                     AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
 
                     RequireConsent = true,
 
                     ClientSecrets = 
                     {
-                        new Secret("secret".Sha256())
+                        new Secret(CryptoManager.EncryptSHA256("B@gencyWeb4Ever"))
                     },
 
                     RedirectUris = { "http://localhost:5002/signin-oidc" },
@@ -79,7 +84,8 @@ namespace BehaviorAgency.IdentityServer.Host
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "api1"
+                        CustomResourceScopes.AgencyProfile,
+                        CustomResourceScopes.AgencyApi
                     },
                     AllowOfflineAccess = true
                 }

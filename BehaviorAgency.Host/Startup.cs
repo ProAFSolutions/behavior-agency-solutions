@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using BehaviorAgency.Infrastructure;
+using BehaviorAgency.Infrastructure.Security;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -44,14 +45,22 @@ namespace BehaviorAgency.Host
                 options.RequireHttpsMetadata = false;
 
                 options.ClientId = "ba_web";
-                options.ClientSecret = CryptoManager.EncryptSHA1("B@gency4Ever");
+                options.ClientSecret = CryptoManager.EncryptSHA1("B@gencyWeb4Ever");
                 options.ResponseType = "code id_token";
 
                 options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;
 
-                options.Scope.Add("ba_api");
+                options.Scope.Clear();
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");
                 options.Scope.Add("offline_access");
+                options.Scope.Add(CustomResourceScopes.AgencyApi);
+                options.Scope.Add(CustomResourceScopes.AgencyProfile);
+
+                options.TokenValidationParameters.NameClaimType = "name";
+                options.TokenValidationParameters.RoleClaimType = "role";
+
             });
         }
 

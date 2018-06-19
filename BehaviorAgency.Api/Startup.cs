@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BehaviorAgency.Data.Context;
 using BehaviorAgency.Data.Repository;
 using BehaviorAgency.Infrastructure;
+using BehaviorAgency.Infrastructure.Security;
 using BehaviorAgency.Services;
 using BehaviorAgency.Services.Impl;
 using Microsoft.AspNetCore.Builder;
@@ -44,11 +45,11 @@ namespace BehaviorAgency.Api
                     {
                         options.RequireHttpsMetadata = false;
                         options.Authority = Configuration.GetValue<string>("IdentityServerUrl");
-                        options.ApiName = "ba_api";
-                        options.ApiSecret = CryptoManager.EncryptSHA1("B@gency4Ever");
+                        options.ApiName = CustomResourceScopes.AgencyApi;
+                        options.ApiSecret = CryptoManager.EncryptSHA256("B@gencyApi4Ever");
                     });
 
-            //services.AddCors();
+            services.AddCors();
 
             //EF Setup
             services.AddDbContext<AppDataContext>();
@@ -69,13 +70,12 @@ namespace BehaviorAgency.Api
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseCors(policy =>
-            //{
-            //    policy.WithOrigins(Configuration.GetValue<string[]>("ClientUrls"));
-            //    policy.AllowAnyMethod();
-            //    policy.AllowAnyHeader();
-            //    policy.WithHeaders("AgencyCode");
-            //});
+            app.UseCors(policy =>
+            {
+                policy.WithOrigins(Configuration.GetValue<string[]>("ClientUrls"));
+                policy.AllowAnyMethod();
+                policy.AllowAnyHeader();
+            });
 
             app.UseAuthentication();
 

@@ -6,15 +6,6 @@ namespace BehaviorAgency.Data.Entities
 {
     public partial class EntitiesContext : DbContext
     {
-        public EntitiesContext()
-        {
-        }
-
-        public EntitiesContext(DbContextOptions<EntitiesContext> options)
-            : base(options)
-        {
-        }
-
         public virtual DbSet<Address> Address { get; set; }
         public virtual DbSet<AgencySelf> AgencySelf { get; set; }
         public virtual DbSet<Case> Case { get; set; }
@@ -32,7 +23,7 @@ namespace BehaviorAgency.Data.Entities
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Data Source=localhost\\sqlexpress;Initial Catalog=BehaviorAgency_DB;Integrated Security=SSPI;");
+                optionsBuilder.UseSqlServer(@"Data Source=localhost\sqlexpress;Initial Catalog=BehaviorAgency_DB;Integrated Security=SSPI;");
             }
         }
 
@@ -40,39 +31,85 @@ namespace BehaviorAgency.Data.Entities
         {
             modelBuilder.Entity<Address>(entity =>
             {
-                entity.Property(e => e.Address1).IsUnicode(false);
+                entity.Property(e => e.Address1)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Address2).IsUnicode(false);
+                entity.Property(e => e.Address2)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.City).IsUnicode(false);
+                entity.Property(e => e.City)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.State).IsUnicode(false);
+                entity.Property(e => e.CountryCode).HasColumnType("nchar(3)");
 
-                entity.Property(e => e.ZipCode).IsUnicode(false);
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.LastModifiedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.State)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ZipCode)
+                    .IsRequired()
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<AgencySelf>(entity =>
             {
+                entity.HasKey(e => e.IdServAgencyId);
+
                 entity.Property(e => e.IdServAgencyId).ValueGeneratedNever();
 
-                entity.Property(e => e.AgencyName).IsUnicode(false);
+                entity.Property(e => e.AgencyLogo).HasColumnType("image");
+
+                entity.Property(e => e.AgencyName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<Case>(entity =>
             {
-                entity.Property(e => e.AdministeredLanguage).IsUnicode(false);
+                entity.Property(e => e.AdministeredLanguage)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.CaseNumber).IsUnicode(false);
+                entity.Property(e => e.CaseNumber)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Insurer).IsUnicode(false);
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
 
-                entity.Property(e => e.MedicaidNumber).IsUnicode(false);
+                entity.Property(e => e.Insurer)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.PolicyNumber).IsUnicode(false);
+                entity.Property(e => e.LastModifiedOn).HasColumnType("datetime");
 
-                entity.Property(e => e.SecondInsurer).IsUnicode(false);
+                entity.Property(e => e.MedicaidNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.SecondaryPolicyNumber).IsUnicode(false);
+                entity.Property(e => e.PolicyNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SecondInsurer)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SecondaryPolicyNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Analyst)
                     .WithMany(p => p.CaseAnalyst)
@@ -99,16 +136,34 @@ namespace BehaviorAgency.Data.Entities
 
             modelBuilder.Entity<CaseStatus>(entity =>
             {
+                entity.HasKey(e => e.StatusId);
+
                 entity.Property(e => e.StatusId).ValueGeneratedNever();
+
+                entity.Property(e => e.Status).HasColumnType("nchar(10)");
             });
 
             modelBuilder.Entity<CustomerInfo>(entity =>
             {
-                entity.Property(e => e.CustomerLastName).IsUnicode(false);
+                entity.HasKey(e => e.CustomerId);
 
-                entity.Property(e => e.CustomerName).IsUnicode(false);
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
 
-                entity.Property(e => e.NaturalLanguage).IsUnicode(false);
+                entity.Property(e => e.CustomerLastName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CustomerName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.LastModifiedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.NaturalLanguage)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Address)
                     .WithMany(p => p.CustomerInfo)
@@ -119,11 +174,32 @@ namespace BehaviorAgency.Data.Entities
 
             modelBuilder.Entity<Document>(entity =>
             {
-                entity.Property(e => e.DocFormat).IsUnicode(false);
+                entity.HasKey(e => e.DocId);
 
-                entity.Property(e => e.DocName).IsUnicode(false);
+                entity.Property(e => e.ApprovedOn).HasColumnType("datetime");
 
-                entity.Property(e => e.DocPath).IsUnicode(false);
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.DocFormat)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DocName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DocPath)
+                    .IsRequired()
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ExpirationDate).HasColumnType("datetime");
+
+                entity.Property(e => e.LastModifiedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.RejectedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.ReviewedOn).HasColumnType("datetime");
 
                 entity.HasOne(d => d.ApprovedByNavigation)
                     .WithMany(p => p.DocumentApprovedByNavigation)
@@ -167,31 +243,52 @@ namespace BehaviorAgency.Data.Entities
 
             modelBuilder.Entity<DocumentCategory>(entity =>
             {
+                entity.HasKey(e => e.DocCategoryId);
+
                 entity.HasIndex(e => e.DocCategoryId)
                     .HasName("IX_DocCategory")
                     .IsUnique();
 
                 entity.Property(e => e.DocCategoryId).ValueGeneratedNever();
 
-                entity.Property(e => e.DocCategoryName).IsUnicode(false);
+                entity.Property(e => e.DocCategoryName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<DocumentStatus>(entity =>
             {
+                entity.HasKey(e => e.DocStatus);
+
                 entity.Property(e => e.DocStatus).ValueGeneratedNever();
 
-                entity.Property(e => e.Status).IsUnicode(false);
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<DocumentType>(entity =>
             {
+                entity.HasKey(e => e.DocTypeId);
+
                 entity.HasIndex(e => e.DocTypeId)
                     .HasName("IX_DocumentType")
                     .IsUnique();
 
                 entity.Property(e => e.DocTypeId).ValueGeneratedNever();
 
-                entity.Property(e => e.DocTypeName).IsUnicode(false);
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.DocTypeDesc).HasColumnType("text");
+
+                entity.Property(e => e.DocTypeName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.LastModifiedOn).HasColumnType("datetime");
 
                 entity.HasOne(d => d.DocCategory)
                     .WithMany(p => p.DocumentType)
@@ -202,19 +299,49 @@ namespace BehaviorAgency.Data.Entities
 
             modelBuilder.Entity<UserInfo>(entity =>
             {
-                entity.Property(e => e.Email).IsUnicode(false);
+                entity.HasKey(e => e.UserId);
 
-                entity.Property(e => e.LastName).IsUnicode(false);
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
 
-                entity.Property(e => e.MiddleName).IsUnicode(false);
+                entity.Property(e => e.Dob)
+                    .HasColumnName("DOB")
+                    .HasColumnType("date");
 
-                entity.Property(e => e.Mobile).IsUnicode(false);
+                entity.Property(e => e.Email)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Name).IsUnicode(false);
+                entity.Property(e => e.IdServUserId).HasMaxLength(450);
 
-                entity.Property(e => e.SecondaryPhone).IsUnicode(false);
+                entity.Property(e => e.LastModifiedOn).HasColumnType("datetime");
 
-                entity.Property(e => e.Sex).IsUnicode(false);
+                entity.Property(e => e.LastName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.MiddleName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Mobile)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SecondaryPhone)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Sex)
+                    .IsRequired()
+                    .HasColumnType("char(1)");
 
                 entity.HasOne(d => d.Address)
                     .WithMany(p => p.UserInfo)
@@ -224,7 +351,13 @@ namespace BehaviorAgency.Data.Entities
 
             modelBuilder.Entity<UserSettings>(entity =>
             {
+                entity.HasKey(e => e.UserId);
+
                 entity.Property(e => e.UserId).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.LastModifiedOn).HasColumnType("datetime");
 
                 entity.HasOne(d => d.User)
                     .WithOne(p => p.UserSettings)

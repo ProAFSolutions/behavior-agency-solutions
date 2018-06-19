@@ -119,7 +119,7 @@ namespace BehaviorAgency.IdentityServer.Host
         {
             if (env.IsDevelopment())
             {
-                //SeedData.EnsureSeedData(app.ApplicationServices);
+                SeedData.EnsureSeedData(app.ApplicationServices);
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
                 app.UseDatabaseErrorPage();

@@ -9,7 +9,49 @@ namespace BehaviorAgency.IdentityServer.Host.Models.AccountViewModels
     public class RegisterViewModel
     {
         [Required]
+        public string AgencyCode { get; set; }
+
+        [Required]
+        [Display(Name = "Name")]
+        public string Name { get; set; }
+
+        [Required]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
+       
+        [DataType(DataType.Date)]
+        [Display(Name = "Birthdate")]
+        public string DBO { get; set; }
+
+        [Required]
+        [Display(Name = "Street")]
+        public string Address1 { get; set; }
+        
+        [Display(Name = "Apt/Suite/etc")]
+        public string Address2 { get; set; }
+
+        [Required]
+        [Display(Name = "City")]
+        public string City { get; set; }
+
+        [Required]
+        [DataType(DataType.PostalCode)]
+        [Display(Name = "ZipCode")]
+        public string ZipCode { get; set; }
+
+        [Required]
+        [Display(Name = "State")]
+        public string State { get; set; }
+
+        [Required]
+        [Phone]
+        [DataType(DataType.PhoneNumber)]
+        [Display(Name = "Phone")]
+        public string Phone { get; set; }
+
+        [Required]
         [EmailAddress]
+        [DataType(DataType.EmailAddress)]
         [Display(Name = "Email")]
         public string Email { get; set; }
 

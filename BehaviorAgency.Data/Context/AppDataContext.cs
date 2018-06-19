@@ -1,5 +1,6 @@
 ﻿using BehaviorAgency.Data.Entities;
 using BehaviorAgency.Infrastructure;
+using BehaviorAgency.Infrastructure.Security;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -14,9 +15,7 @@ namespace BehaviorAgency.Data.Context
     {
         private string _connectionString;
 
-        public AppDataContext(DbContextOptions<EntitiesContext> options, 
-                              IConfigurationRoot config, 
-                              IHttpContextAccessor httpContextAccessor) : base(options) {
+        public AppDataContext(IConfigurationRoot config, IHttpContextAccessor httpContextAccessor) : base() {
 
             if (!httpContextAccessor.HttpContext.Request.Headers.ContainsKey("AgencyCode"))
                 throw new UnauthorizedAccessException("Missing agency code");

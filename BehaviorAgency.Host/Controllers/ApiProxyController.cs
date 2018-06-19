@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using BehaviorAgency.Host.Core;
+using System.Linq;
+using BehaviorAgency.Infrastructure;
+using BehaviorAgency.Infrastructure.Security;
 
 namespace BehaviorAgency.Host.Controllers
 {
@@ -14,19 +17,18 @@ namespace BehaviorAgency.Host.Controllers
     public class ApiProxyController : Controller
     {
         private readonly IConfiguration _config;
-        private readonly HttpClient _httpClient;
         private readonly string _apiBaseUrl;
-        private delegate Task<HttpResponseMessage> HttpCallAction();
+
+        private delegate Task<HttpResponseMessage> HttpCallAction(HttpClient httpClient);
 
         public ApiProxyController(IConfiguration config) {
             _config = config;
-            _httpClient = new HttpClient();
             _apiBaseUrl = _config.GetValue<string>("BAgencyApiBaseUrl");
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            if (!context.HttpContext.Request.Query.ContainsKey("routeUrl")) {
+            if (!context.HttpContext.Request.Query.ContainsKey("apiRouteUrl")) {
                 context.Result = BadRequest("RouteUrl is missing");
                 return;
             } 
@@ -35,40 +37,40 @@ namespace BehaviorAgency.Host.Controllers
 
         
         [HttpGet]
-        public async Task<IActionResult> Get(string routeUrl)
+        public async Task<IActionResult> Get(string apiRouteUrl)
         {
-            return await CallApiUsingUserAccessToken(() =>
+            return await CallApiUsingUserAccessToken((HttpClient httpClient) =>
             {
-                return _httpClient.GetAsync($"{_apiBaseUrl}/{routeUrl}");
+                return httpClient.GetAsync($"{_apiBaseUrl}/{apiRouteUrl}");
             });
         }
        
         [HttpPost]
-        public async Task<IActionResult> Post(string routeUrl, [FromBody]object data)
+        public async Task<IActionResult> Post(string apiRouteUrl, [FromBody]object data)
         {
-            return await CallApiUsingUserAccessToken(() =>
+            return await CallApiUsingUserAccessToken((HttpClient httpClient) =>
             {
-                return _httpClient.PostAsync($"{_apiBaseUrl}/{routeUrl}", new JsonContent(data));
+                return httpClient.PostAsync($"{_apiBaseUrl}/{apiRouteUrl}", new JsonContent(data));
             });
         }
 
        
         [HttpPut]
-        public async Task<IActionResult> Put(string routeUrl, [FromBody]object data)
+        public async Task<IActionResult> Put(string apiRouteUrl, [FromBody]object data)
         {
-            return await CallApiUsingUserAccessToken(() =>
+            return await CallApiUsingUserAccessToken((HttpClient httpClient) =>
             {
-                return _httpClient.PutAsync($"{_apiBaseUrl}/{routeUrl}", new JsonContent(data));
+                return httpClient.PutAsync($"{_apiBaseUrl}/{apiRouteUrl}", new JsonContent(data));
             });
         }
 
        
         [HttpDelete]
-        public async Task<IActionResult> Delete(string routeUrl)
+        public async Task<IActionResult> Delete(string apiRouteUrl)
         {
-            return await CallApiUsingUserAccessToken(() =>
+            return await CallApiUsingUserAccessToken((HttpClient httpClient) =>
             {
-                return _httpClient.DeleteAsync($"{_apiBaseUrl}/{routeUrl}");
+                return httpClient.DeleteAsync($"{_apiBaseUrl}/{apiRouteUrl}");
             });
         }
        
@@ -76,12 +78,16 @@ namespace BehaviorAgency.Host.Controllers
         private async Task<IActionResult> CallApiUsingUserAccessToken(HttpCallAction action) {
 
             var accessToken = await HttpContext.GetTokenAsync("access_token");
+            var agencyCodesClaim = User.Claims.Where(C => C.Type == "agency_code").SingleOrDefault();
 
-            if (string.IsNullOrEmpty(accessToken))
+            if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(agencyCodesClaim.Value))
                 return Unauthorized();
 
-            _httpClient.SetBearerToken(accessToken);
-            HttpResponseMessage response = await action();
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Add("AgencyCode", CryptoManager.Encrypt(agencyCodesClaim.Value));
+            httpClient.SetBearerToken(accessToken);
+
+            HttpResponseMessage response = await action(httpClient);
             if (response.IsSuccessStatusCode)
             {
                 var jsonContent = await response.Content.ReadAsStringAsync();

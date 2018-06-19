@@ -21,7 +21,8 @@ namespace BehaviorAgency.IdentityServer.Host
 
             using (var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+                scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>()
+                     .Database.Migrate();
 
                 {
                     var context = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
@@ -33,72 +34,55 @@ namespace BehaviorAgency.IdentityServer.Host
                     var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
                     context.Database.Migrate();
 
-                    var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                    var alice = userMgr.FindByNameAsync("alice").Result;
-                    if (alice == null)
-                    {
-                        alice = new ApplicationUser
-                        {
-                            UserName = "alice"
-                        };
-                        var result = userMgr.CreateAsync(alice, "Pass123$").Result;
-                        if (!result.Succeeded)
-                        {
-                            throw new Exception(result.Errors.First().Description);
-                        }
+                    var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                    if (!roleMgr.RoleExistsAsync("Admin").Result) {
 
-                        result = userMgr.AddClaimsAsync(alice, new Claim[]{
-                            new Claim(JwtClaimTypes.Name, "Alice Smith"),
-                            new Claim(JwtClaimTypes.GivenName, "Alice"),
-                            new Claim(JwtClaimTypes.FamilyName, "Smith"),
-                            new Claim(JwtClaimTypes.Email, "AliceSmith@email.com"),
+                        var roles = new string[] { "Admin", "AgencyAdmin", "Rbt", "Analyst", "FrontDesk" };
+                        foreach (var role in roles)
+                        {
+                            var result = roleMgr.CreateAsync(new IdentityRole(role)).Result;
+                            if(result.Succeeded)
+                               Console.WriteLine($"Role {role} created");
+                        }
+                    }
+
+                    var adminEmail = "alexclavijo85@gmail.com";
+                    var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                    var admin = userMgr.FindByEmailAsync(adminEmail).Result;
+                    if (admin == null)
+                    {
+                        admin = new ApplicationUser
+                        {
+                            UserName = "admin",
+                            PhoneNumber = "7864138551",
+                            Email = adminEmail
+                        };
+
+                        //Admin
+                        var result = userMgr.CreateAsync(admin, "Qwerty.123q!").Result;
+                        if (!result.Succeeded)
+                            throw new Exception(result.Errors.First().Description);
+
+                        //Claims
+                        result = userMgr.AddClaimsAsync(admin, new Claim[]{
+                            new Claim(JwtClaimTypes.Name, "Administrator"),
+                            new Claim(JwtClaimTypes.Email, admin.Email),
                             new Claim(JwtClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean),
-                            new Claim(JwtClaimTypes.WebSite, "http://alice.com"),
-                            new Claim(JwtClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", IdentityServer4.IdentityServerConstants.ClaimValueTypes.Json)
+                            new Claim(JwtClaimTypes.PhoneNumber, admin.PhoneNumber),
+                            new Claim(JwtClaimTypes.Role, "Admin"),
                         }).Result;
                         if (!result.Succeeded)
-                        {
                             throw new Exception(result.Errors.First().Description);
-                        }
-                        Console.WriteLine("alice created");
+
+                        //Adding Admin role
+                        admin = userMgr.FindByEmailAsync(adminEmail).Result;
+                        result = userMgr.AddToRoleAsync(admin, "Admin").Result;
+                        if(result.Succeeded)
+                           Console.WriteLine("Admin account created");
                     }
                     else
                     {
-                        Console.WriteLine("alice already exists");
-                    }
-
-                    var bob = userMgr.FindByNameAsync("bob").Result;
-                    if (bob == null)
-                    {
-                        bob = new ApplicationUser
-                        {
-                            UserName = "bob"
-                        };
-                        var result = userMgr.CreateAsync(bob, "Pass123$").Result;
-                        if (!result.Succeeded)
-                        {
-                            throw new Exception(result.Errors.First().Description);
-                        }
-
-                        result = userMgr.AddClaimsAsync(bob, new Claim[]{
-                        new Claim(JwtClaimTypes.Name, "Bob Smith"),
-                        new Claim(JwtClaimTypes.GivenName, "Bob"),
-                        new Claim(JwtClaimTypes.FamilyName, "Smith"),
-                        new Claim(JwtClaimTypes.Email, "BobSmith@email.com"),
-                        new Claim(JwtClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean),
-                        new Claim(JwtClaimTypes.WebSite, "http://bob.com"),
-                        new Claim(JwtClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", IdentityServer4.IdentityServerConstants.ClaimValueTypes.Json),
-                        new Claim("location", "somewhere")
-                    }).Result;
-                        if (!result.Succeeded)
-                        {
-                            throw new Exception(result.Errors.First().Description);
-                        }
-                        Console.WriteLine("bob created");
-                    }
-                    else
-                    {
-                        Console.WriteLine("bob already exists");
+                        Console.WriteLine("admin already exists");
                     }
                 }
             }
