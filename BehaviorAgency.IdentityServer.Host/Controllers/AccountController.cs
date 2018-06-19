@@ -13,6 +13,9 @@ using Microsoft.Extensions.Options;
 using BehaviorAgency.IdentityServer.Host.Models;
 using BehaviorAgency.IdentityServer.Host.Models.AccountViewModels;
 using BehaviorAgency.IdentityServer.Host.Services;
+using IdentityModel;
+using BehaviorAgency.Infrastructure.Security;
+using IdentityServer4;
 
 namespace BehaviorAgency.IdentityServer.Host.Controllers
 {
@@ -220,8 +223,35 @@ namespace BehaviorAgency.IdentityServer.Host.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await _userManager.CreateAsync(user, model.Password);
+                var user = new ApplicationUser {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    PhoneNumber = model.Phone
+                };
+
+                await _userManager.CreateAsync(user, model.Password);
+
+                await _userManager.AddToRoleAsync(user, model.UserRole);
+
+                var result = await _userManager.AddClaimsAsync(user, new Claim[] {
+                    new Claim(CustomClaimTypes.AgencyCode, model.AgencyCode),
+                    new Claim(JwtClaimTypes.Role, model.UserRole),
+                    new Claim(JwtClaimTypes.Email, model.Email, ClaimValueTypes.Email),
+                    new Claim(JwtClaimTypes.EmailVerified, "false", ClaimValueTypes.Boolean),
+                    new Claim(JwtClaimTypes.PhoneNumber, model.Phone),
+                    new Claim(JwtClaimTypes.Name, model.Name),
+                    new Claim(JwtClaimTypes.MiddleName, model.MiddleName),
+                    new Claim(JwtClaimTypes.FamilyName, model.LastName),
+                    new Claim(JwtClaimTypes.BirthDate, model.DBO, ClaimValueTypes.Date),
+                    new Claim(JwtClaimTypes.Address, new Address {
+                        Address1 = model.Address1,
+                        Address2 = model.Address2,
+                        City = model.City,
+                        ZipCode = model.ZipCode,
+                        State = model.State
+                    }.ToJson(), IdentityServerConstants.ClaimValueTypes.Json),
+                });
+
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
@@ -234,6 +264,7 @@ namespace BehaviorAgency.IdentityServer.Host.Controllers
                     _logger.LogInformation("User created a new account with password.");
                     return RedirectToLocal(returnUrl);
                 }
+                
                 AddErrors(result);
             }
 

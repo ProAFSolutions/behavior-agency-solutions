@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BehaviorAgency.Infrastructure.Security;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,8 +13,15 @@ namespace BehaviorAgency.IdentityServer.Host.Models.AccountViewModels
         public string AgencyCode { get; set; }
 
         [Required]
+        public string UserRoleToken { get; set; }
+
+        [Required]
         [Display(Name = "Name")]
         public string Name { get; set; }
+
+        
+        [Display(Name = "Middle Name")]
+        public string MiddleName { get; set; }
 
         [Required]
         [Display(Name = "Last Name")]
@@ -65,5 +73,11 @@ namespace BehaviorAgency.IdentityServer.Host.Models.AccountViewModels
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        public string UserRole {
+            get {
+                return UserRoleToken ?? CryptoManager.Decrypt(UserRoleToken);
+            }
+        }
     }
 }
