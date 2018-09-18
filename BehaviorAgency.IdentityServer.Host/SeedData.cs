@@ -3,7 +3,9 @@ using System.Linq;
 using System.Security.Claims;
 using BehaviorAgency.IdentityServer.Host.Data;
 using BehaviorAgency.IdentityServer.Host.Models;
+using BehaviorAgency.Infrastructure.Security;
 using IdentityModel;
+using IdentityServer4;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 
@@ -34,6 +36,8 @@ namespace BehaviorAgency.IdentityServer.Host
                     var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
                     context.Database.Migrate();
 
+                    context.Agencies.AddAsync(new Agency { Name="Dev Agency", AgencyCode="BADev" });
+
                     var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
                     if (!roleMgr.RoleExistsAsync("Admin").Result) {
 
@@ -53,9 +57,10 @@ namespace BehaviorAgency.IdentityServer.Host
                     {
                         admin = new ApplicationUser
                         {
-                            UserName = "admin",
+                            UserName = adminEmail,
                             PhoneNumber = "7864138551",
-                            Email = adminEmail
+                            Email = adminEmail,
+                            EmailConfirmed = true
                         };
 
                         //Admin
@@ -64,12 +69,23 @@ namespace BehaviorAgency.IdentityServer.Host
                             throw new Exception(result.Errors.First().Description);
 
                         //Claims
-                        result = userMgr.AddClaimsAsync(admin, new Claim[]{
-                            new Claim(JwtClaimTypes.Name, "Administrator"),
-                            new Claim(JwtClaimTypes.Email, admin.Email),
-                            new Claim(JwtClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean),
-                            new Claim(JwtClaimTypes.PhoneNumber, admin.PhoneNumber),
+                        result = userMgr.AddClaimsAsync(admin, new Claim[] {
+                            new Claim(CustomClaimTypes.AgencyCode, "BADev"),
                             new Claim(JwtClaimTypes.Role, "Admin"),
+                            new Claim(JwtClaimTypes.Email, adminEmail, ClaimValueTypes.Email),
+                            new Claim(JwtClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean),
+                            new Claim(JwtClaimTypes.PhoneNumber, "7864138551"),
+                            new Claim(JwtClaimTypes.Name, "Alejandro"),
+                            new Claim(JwtClaimTypes.MiddleName, string.Empty),
+                            new Claim(JwtClaimTypes.FamilyName, "Clavijo"),
+                            new Claim(JwtClaimTypes.BirthDate, string.Empty, ClaimValueTypes.Date),
+                            new Claim(JwtClaimTypes.Address, new Address {
+                                Address1 = "2385 NW 11th ST",
+                                Address2 = "APT-C10",
+                                City = "Miami",
+                                ZipCode = "33125",
+                                State = "FL"
+                            }.ToJson(), IdentityServerConstants.ClaimValueTypes.Json),
                         }).Result;
                         if (!result.Succeeded)
                             throw new Exception(result.Errors.First().Description);
@@ -77,8 +93,14 @@ namespace BehaviorAgency.IdentityServer.Host
                         //Adding Admin role
                         admin = userMgr.FindByEmailAsync(adminEmail).Result;
                         result = userMgr.AddToRoleAsync(admin, "Admin").Result;
-                        if(result.Succeeded)
-                           Console.WriteLine("Admin account created");
+                        if (result.Succeeded) {
+                            context.UserAgencies.Add(new ApplicationUserAgency
+                            {
+                                AgencyCode = "BADev",
+                                UserId = admin.Id
+                            });
+                            Console.WriteLine("Admin account created");
+                        }
                     }
                     else
                     {

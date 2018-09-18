@@ -20,6 +20,9 @@ namespace BehaviorAgency.IdentityServer.Host
             {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
+                new IdentityResources.Email(),
+                new IdentityResources.Phone(),
+                new IdentityResources.Address(),
                 new IdentityResource {
                     Name = CustomResourceScopes.AgencyProfile,
                     DisplayName = "Agency Profile",
@@ -49,6 +52,7 @@ namespace BehaviorAgency.IdentityServer.Host
 
                      // include the following using claims in access token (in addition to subject id)
                     UserClaims = {
+                        JwtClaimTypes.Email,
                         JwtClaimTypes.Role,
                         CustomClaimTypes.AgencyCode
                     },
@@ -84,6 +88,9 @@ namespace BehaviorAgency.IdentityServer.Host
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        IdentityServerConstants.StandardScopes.Phone,
+                        IdentityServerConstants.StandardScopes.Address,
                         CustomResourceScopes.AgencyProfile,
                         CustomResourceScopes.AgencyApi
                     },

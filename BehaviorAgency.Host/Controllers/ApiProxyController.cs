@@ -78,13 +78,8 @@ namespace BehaviorAgency.Host.Controllers
         private async Task<IActionResult> CallApiUsingUserAccessToken(HttpCallAction action) {
 
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            var agencyCodesClaim = User.Claims.Where(C => C.Type == "agency_code").SingleOrDefault();
-
-            if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(agencyCodesClaim.Value))
-                return Unauthorized();
 
             var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("AgencyCode", CryptoManager.Encrypt(agencyCodesClaim.Value));
             httpClient.SetBearerToken(accessToken);
 
             HttpResponseMessage response = await action(httpClient);

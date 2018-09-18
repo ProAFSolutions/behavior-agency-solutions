@@ -15,12 +15,9 @@ namespace BehaviorAgency.Data.Context
     {
         private string _connectionString;
 
-        public AppDataContext(IConfigurationRoot config, IHttpContextAccessor httpContextAccessor) : base() {
-
-            if (!httpContextAccessor.HttpContext.Request.Headers.ContainsKey("AgencyCode"))
-                throw new UnauthorizedAccessException("Missing agency code");
-
-            var agencyCode = httpContextAccessor.HttpContext.Request.Headers["AgencyCode"];
+        public AppDataContext(IConfigurationRoot config, IUserClaimsService claimsService) : base()
+        {
+            var agencyCode = claimsService.GetClaimValue(CustomClaimTypes.AgencyCode);
 
             var agencyDB = CryptoManager.Decrypt(agencyCode);
 
