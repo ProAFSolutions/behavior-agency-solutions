@@ -13,7 +13,7 @@ namespace BehaviorAgency.Services
         List<DocumentDto> GetDocuments(int ownerId);
         DocumentDto AddDocument(DocumentDto document, int userId);
         bool UpdateDocument(DocumentDto document, int userId);
-        void RemoveDocument(int docId, int userId);
-        void SetDocumentStatus(int docId, DocumentStatusEnum newStatus, int userId);
+        bool SetDocumentStatus(int docId, DocumentStatusEnum newStatus, int userId);
+        void RemoveDocument(int docId);
     }
 }

@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using BehaviorAgency.Host.ViewModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
-using System.Net.Http;
-using Newtonsoft.Json.Linq;
 using BehaviorAgency.Host.Core;
 
 namespace BehaviorAgency.Host.Controllers.Web

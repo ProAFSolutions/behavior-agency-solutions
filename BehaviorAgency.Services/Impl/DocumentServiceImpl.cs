@@ -27,7 +27,7 @@ namespace BehaviorAgency.Services.Impl
 
         public List<DocumentDto> GetDocuments(int ownerId)
         {
-            if (ownerId <= 0) throw new ArgumentOutOfRangeException("Invalid User Id");
+            if (ownerId <= 0) throw new ArgumentOutOfRangeException("Invalid OwnerId");
 
             return _documentRepository.Find(x => x.UserId == ownerId)
                                       .Select(x => new DocumentDto(x))
@@ -36,22 +36,54 @@ namespace BehaviorAgency.Services.Impl
 
         public DocumentDto AddDocument(DocumentDto document, int userId)
         {
-            throw new NotImplementedException();
+            if (userId <= 0) throw new ArgumentOutOfRangeException("Invalid User Id");
+            if (document == null) throw new ArgumentNullException("Document cannot be null");
+
+            Document created = _documentRepository.Insert(document.MapToEntity(), userId);
+            document.DocId = created.DocId;
+
+            return document;
         }
 
-        public void RemoveDocument(int docId, int userId)
+        public bool UpdateDocument(DocumentDto dto, int userId)
         {
-            throw new NotImplementedException();
+            if (userId <= 0) throw new ArgumentOutOfRangeException("Invalid User Id");
+            if (dto == null) throw new ArgumentNullException("Document cannot be null");
+
+            Document loaded = _documentRepository.FindById(dto.DocId);
+            if (loaded == null) throw new ArgumentOutOfRangeException("Invalid Document Id");
+
+            DocumentDto existingDto = new DocumentDto(loaded);
+            bool updated = existingDto.Set(dto);
+            if (updated) 
+                _documentRepository.Update(existingDto.MapToEntity(), userId);
+            
+            return updated;
         }
 
-        public bool UpdateDocument(DocumentDto document, int userId)
+        public bool SetDocumentStatus(int docId, DocumentStatusEnum newStatus, int userId)
         {
-            throw new NotImplementedException();
+            if (userId <= 0) throw new ArgumentOutOfRangeException("Invalid User Id");
+
+            Document loaded = _documentRepository.FindById(docId);
+            if (loaded == null) throw new ArgumentOutOfRangeException("Invalid Document Id");
+
+            DocumentDto existingDto = new DocumentDto(loaded);
+            bool updated = existingDto.SetStatus(newStatus);
+            if (updated)
+                _documentRepository.Update(existingDto.MapToEntity(), userId);
+
+            return updated;
+
         }
 
-        public void SetDocumentStatus(int docId, DocumentStatusEnum newStatus, int userId)
+        public void RemoveDocument(int docId)
         {
-            throw new NotImplementedException();
+            if (docId <= 0) throw new ArgumentOutOfRangeException("Invalid Doc Id");
+
+            //TODO Remove doc physically 
+
+            _documentRepository.Delete(docId);
         }
     }
 }
